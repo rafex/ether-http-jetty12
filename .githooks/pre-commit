@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -e
+cd ether-http-jetty12
+# Update source and POM with license headers
+mvn -q license:update-file-header license:update-project-license
+
+# Stage any files automatically modified by the above
+git add LICENSE.txt pom.xml src/**/*.java
+
+# Verify that license headers are present and valid
+if ! mvn -q license:check-file-header; then
+  echo "❌ Error: Problemas con las licencias - Verifica los archivos"
+  exit 1
+fi
