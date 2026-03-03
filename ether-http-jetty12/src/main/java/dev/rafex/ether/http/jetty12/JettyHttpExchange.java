@@ -36,6 +36,7 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
 
+import dev.rafex.ether.json.JsonCodec;
 import dev.rafex.ether.http.core.HttpExchange;
 
 public final class JettyHttpExchange implements HttpExchange {

@@ -26,5 +26,7 @@ package dev.rafex.ether.http.jetty12;
  * #L%
  */
 
+import dev.rafex.ether.json.JsonCodec;
+
 public record JettyModuleContext(JettyServerConfig config, JsonCodec jsonCodec, TokenVerifier tokenVerifier) {
 }

@@ -37,6 +37,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.PathMappingsHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
+import dev.rafex.ether.json.JsonCodec;
 import dev.rafex.ether.http.core.AuthPolicy;
 
 public final class JettyServerFactory {

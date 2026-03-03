@@ -32,6 +32,8 @@ import java.nio.charset.StandardCharsets;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
 
+import dev.rafex.ether.json.JsonCodec;
+
 final class JettyResponseUtil {
 
 	private JettyResponseUtil() {

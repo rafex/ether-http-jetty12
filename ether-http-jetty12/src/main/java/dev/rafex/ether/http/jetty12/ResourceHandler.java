@@ -38,6 +38,7 @@ import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.UrlEncoded;
 
+import dev.rafex.ether.json.JsonCodec;
 import dev.rafex.ether.http.core.DefaultErrorMapper;
 import dev.rafex.ether.http.core.ErrorMapper;
 import dev.rafex.ether.http.core.HttpResource;

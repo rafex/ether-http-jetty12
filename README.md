@@ -5,6 +5,7 @@ Jetty 12 transport adapter for `ether-http-core`.
 ## Scope
 
 - `JettyHttpExchange` implementation
+- JSON powered by `ether-json` (`dev.rafex.ether.json.JsonCodec`)
 - Base handlers for resource routing/dispatch
 - Jetty route registry primitives
 - Server wiring for Jetty (`JettyServerFactory`, `JettyServerRunner`)
