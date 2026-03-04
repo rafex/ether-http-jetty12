@@ -56,8 +56,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<ether-http-core.version>1.0.0-SNAPSHOT</ether-http-core.version>
-		<ether-json.version>4.0.0-SNAPSHOT</ether-json.version>
+		<ether-http-core.version>4.0.0-v20260304</ether-http-core.version>
+		<ether-json.version>4.0.0-v20260304</ether-json.version>
 		<jetty.version>12.1.6</jetty.version>
 	</properties>
 
