@@ -49,6 +49,7 @@ public abstract class ResourceHandler extends Handler.Abstract implements HttpRe
 
 	private final JsonCodec jsonCodec;
 	private final ErrorMapper errorMapper;
+	private final JettyApiErrorResponses errorResponses;
 
 	protected ResourceHandler(final JsonCodec jsonCodec) {
 		this(jsonCodec, new DefaultErrorMapper());
@@ -57,6 +58,7 @@ public abstract class ResourceHandler extends Handler.Abstract implements HttpRe
 	protected ResourceHandler(final JsonCodec jsonCodec, final ErrorMapper errorMapper) {
 		this.jsonCodec = jsonCodec;
 		this.errorMapper = errorMapper;
+		this.errorResponses = new JettyApiErrorResponses(jsonCodec);
 	}
 
 	protected abstract String basePath();
@@ -75,7 +77,7 @@ public abstract class ResourceHandler extends Handler.Abstract implements HttpRe
 		final var relPath = normalizeRelPath(path);
 		final var match = RouteMatcher.match(relPath, routes());
 		if (match.isEmpty()) {
-			JettyResponseUtil.json(response, callback, jsonCodec, 404, Map.of("error", "not_found"));
+			errorResponses.notFound(response, callback, path);
 			return true;
 		}
 
@@ -93,8 +95,7 @@ public abstract class ResourceHandler extends Handler.Abstract implements HttpRe
 			return dispatch(method, x);
 		} catch (final Exception e) {
 			final var mapped = errorMapper.map(e);
-			JettyResponseUtil.json(response, callback, jsonCodec, mapped.status(),
-					Map.of("error", mapped.code(), "message", mapped.message()));
+			errorResponses.error(response, callback, mapped, path);
 			return true;
 		}
 	}

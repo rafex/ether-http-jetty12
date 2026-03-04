@@ -29,7 +29,6 @@ package dev.rafex.ether.http.jetty12;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jetty.http.pathmap.PathSpec;
@@ -49,14 +48,14 @@ public final class JettyAuthHandler extends Handler.Wrapper {
 	}
 
 	private final TokenVerifier tokenVerifier;
-	private final JsonCodec jsonCodec;
+	private final JettyApiErrorResponses errorResponses;
 	private final List<Rule> publicRules = new ArrayList<>();
 	private final List<PathSpec> protectedPrefixes = new ArrayList<>();
 
 	public JettyAuthHandler(final Handler delegate, final TokenVerifier tokenVerifier, final JsonCodec jsonCodec) {
 		super(delegate);
 		this.tokenVerifier = Objects.requireNonNull(tokenVerifier);
-		this.jsonCodec = Objects.requireNonNull(jsonCodec);
+		this.errorResponses = new JettyApiErrorResponses(Objects.requireNonNull(jsonCodec));
 	}
 
 	public JettyAuthHandler publicPath(final String method, final String pathSpec) {
@@ -94,8 +93,7 @@ public final class JettyAuthHandler extends Handler.Wrapper {
 		final var method = request.getMethod().toUpperCase();
 		final var path = request.getHttpURI() != null ? request.getHttpURI().getPath() : null;
 		if (path == null) {
-			JettyResponseUtil.json(response, callback, jsonCodec, 400,
-					Map.of("error", "bad_request", "message", "missing_path"));
+			errorResponses.badRequest(response, callback, "missing_path");
 			return true;
 		}
 
@@ -105,8 +103,7 @@ public final class JettyAuthHandler extends Handler.Wrapper {
 
 		final var authz = request.getHeaders().get("authorization");
 		if (authz == null || !authz.startsWith("Bearer ")) {
-			JettyResponseUtil.json(response, callback, jsonCodec, 401,
-					Map.of("error", "unauthorized", "code", "missing_bearer_token"));
+			errorResponses.unauthorized(response, callback, "missing_bearer_token");
 			return true;
 		}
 
@@ -115,7 +112,7 @@ public final class JettyAuthHandler extends Handler.Wrapper {
 		if (!verification.ok()) {
 			final var code = verification.code() == null || verification.code().isBlank() ? "invalid_token"
 					: verification.code();
-			JettyResponseUtil.json(response, callback, jsonCodec, 401, Map.of("error", "unauthorized", "code", code));
+			errorResponses.unauthorized(response, callback, code);
 			return true;
 		}
 

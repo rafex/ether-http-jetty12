@@ -6,11 +6,13 @@ Jetty 12 transport adapter for `ether-http-core`.
 
 - `JettyHttpExchange` implementation
 - JSON powered by `ether-json` (`dev.rafex.ether.json.JsonCodec`)
+- Response helpers (`JettyApiResponses`, `JettyApiErrorResponses`)
 - Base handlers for resource routing/dispatch
 - Jetty route registry primitives
 - Server wiring for Jetty (`JettyServerFactory`, `JettyServerRunner`)
 - Auth pipeline (`JettyAuthHandler`, `TokenVerifier`, `JettyAuthPolicyRegistry`)
 - Middleware pipeline (`JettyMiddleware`, `JettyMiddlewareRegistry`)
+- Transport-level errors (`JettyTransportException`, `JettyTransportRuntimeException`)
 
 This module may depend on `org.eclipse.jetty:*`.
 

@@ -28,6 +28,7 @@ package dev.rafex.ether.http.jetty12;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
@@ -41,9 +42,18 @@ final class JettyResponseUtil {
 
 	static void json(final Response response, final Callback callback, final JsonCodec codec, final int status,
 			final Object body) {
+		try {
+			jsonOrThrow(response, callback, codec, status, body);
+		} catch (final JettyTransportException e) {
+			throw new JettyTransportRuntimeException("Error writing JSON response", e);
+		}
+	}
+
+	static void jsonOrThrow(final Response response, final Callback callback, final JsonCodec codec, final int status,
+			final Object body) throws JettyTransportException {
 		response.setStatus(status);
 		response.getHeaders().put("content-type", "application/json; charset=utf-8");
-		final var jsonBody = body instanceof final String s ? s : codec.toJson(body);
+		final var jsonBody = toJsonBody(codec, body);
 		writeUtf8(response, callback, jsonBody);
 	}
 
@@ -61,5 +71,16 @@ final class JettyResponseUtil {
 	private static void writeUtf8(final Response response, final Callback callback, final String body) {
 		final var bytes = body.getBytes(StandardCharsets.UTF_8);
 		response.write(true, ByteBuffer.wrap(bytes), callback);
+	}
+
+	private static String toJsonBody(final JsonCodec codec, final Object body) throws JettyTransportException {
+		if (body instanceof final String s) {
+			return s;
+		}
+		try {
+			return Objects.requireNonNull(codec).toJson(body);
+		} catch (final RuntimeException e) {
+			throw new JettyTransportException("Error serializing JSON payload", e);
+		}
 	}
 }

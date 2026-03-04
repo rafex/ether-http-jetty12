@@ -47,7 +47,7 @@ public final class JettyHttpExchange implements HttpExchange {
 	private final Map<String, String> pathParams;
 	private final Map<String, List<String>> queryParams;
 	private final Set<String> allowedMethods;
-	private final JsonCodec jsonCodec;
+	private final JettyApiResponses apiResponses;
 
 	public JettyHttpExchange(final Request request, final Response response, final Callback callback,
 			final Map<String, String> pathParams, final Map<String, List<String>> queryParams,
@@ -58,7 +58,7 @@ public final class JettyHttpExchange implements HttpExchange {
 		this.pathParams = pathParams;
 		this.queryParams = queryParams;
 		this.allowedMethods = normalizeMethods(allowedMethods);
-		this.jsonCodec = jsonCodec;
+		this.apiResponses = new JettyApiResponses(jsonCodec);
 	}
 
 	public Request request() {
@@ -119,17 +119,17 @@ public final class JettyHttpExchange implements HttpExchange {
 
 	@Override
 	public void json(final int status, final Object body) {
-		JettyResponseUtil.json(response, callback, jsonCodec, status, body);
+		apiResponses.json(response, callback, status, body);
 	}
 
 	@Override
 	public void text(final int status, final String body) {
-		JettyResponseUtil.text(response, callback, status, body);
+		apiResponses.text(response, callback, status, body);
 	}
 
 	@Override
 	public void noContent(final int status) {
-		JettyResponseUtil.noContent(response, callback, status);
+		apiResponses.noContent(response, callback, status);
 	}
 
 	@Override
