@@ -2,6 +2,7 @@
 PROJECT_DIR         := ether-http-jetty12
 PROJECT_GROUP_ID    := dev.rafex.ether.http.jetty12
 PROJECT_ARTIFACT_ID := ether-http-jetty12
+DEPENDENCY_COORDS   := ether-http-core.version=dev.rafex.ether.http:ether-http-core ether-json.version=dev.rafex.ether.json:ether-json
 
 # Include shared build logic
 include ../build-helpers/common.mk
