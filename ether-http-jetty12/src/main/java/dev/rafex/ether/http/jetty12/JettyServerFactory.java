@@ -26,19 +26,27 @@ package dev.rafex.ether.http.jetty12;
  * #L%
  */
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.eclipse.jetty.server.ForwardedRequestCustomizer;
 import org.eclipse.jetty.http.pathmap.PathSpec;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.GracefulHandler;
 import org.eclipse.jetty.server.handler.PathMappingsHandler;
+import org.eclipse.jetty.server.handler.QoSHandler;
+import org.eclipse.jetty.server.handler.SizeLimitHandler;
+import org.eclipse.jetty.server.handler.ThreadLimitHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
-import dev.rafex.ether.json.JsonCodec;
 import dev.rafex.ether.http.core.AuthPolicy;
+import dev.rafex.ether.json.JsonCodec;
 
 public final class JettyServerFactory {
 
@@ -65,13 +73,27 @@ public final class JettyServerFactory {
 		pool.setName(config.threadPoolName());
 
 		final var server = new Server(pool);
-		final var connector = new ServerConnector(server);
+		server.setStopAtShutdown(config.stopAtShutdown());
+		server.setStopTimeout(config.stopTimeoutMs());
+
+		final var httpConfig = buildHttpConfiguration(config);
+		final var connector = new ServerConnector(server, new HttpConnectionFactory(httpConfig));
+		if (config.host() != null && !config.host().isBlank()) {
+			connector.setHost(config.host());
+		}
 		connector.setPort(config.port());
+		connector.setIdleTimeout(config.idleTimeoutMs());
+		connector.setAcceptQueueSize(config.acceptQueueSize());
+		connector.setReuseAddress(config.reuseAddress());
 		server.addConnector(connector);
 
 		final var routesHandler = buildRoutes(routeRegistry.routes());
 		final var withAuth = applyAuthPolicies(routesHandler, tokenVerifier, jsonCodec, authPolicies);
-		final var appHandler = applyMiddlewares(withAuth, middlewares);
+		final var withMiddlewares = applyMiddlewares(withAuth, middlewares);
+		final var withSizeLimits = applySizeLimits(withMiddlewares, config);
+		final var withQoS = applyQoS(withSizeLimits, config);
+		final var withThreadLimit = applyThreadLimit(withQoS, config);
+		final var appHandler = applyGracefulShutdown(withThreadLimit, config);
 		server.setHandler(appHandler);
 
 		return new JettyServerRunner(server);
@@ -117,5 +139,89 @@ public final class JettyServerFactory {
 			current = stack.get(i).wrap(current);
 		}
 		return current;
+	}
+
+	private static HttpConfiguration buildHttpConfiguration(final JettyServerConfig config) {
+		final var httpConfig = new HttpConfiguration();
+		httpConfig.setInputBufferSize(config.inputBufferSize());
+		httpConfig.setOutputBufferSize(config.outputBufferSize());
+		httpConfig.setRequestHeaderSize(config.requestHeaderSize());
+		httpConfig.setResponseHeaderSize(config.responseHeaderSize());
+		httpConfig.setMinRequestDataRate(config.minRequestDataRate());
+		httpConfig.setMinResponseDataRate(config.minResponseDataRate());
+		httpConfig.setMaxErrorDispatches(config.maxErrorDispatches());
+		httpConfig.setMaxUnconsumedRequestContentReads(config.maxUnconsumedRequestContentReads());
+		httpConfig.setSendServerVersion(false);
+		httpConfig.setSendDateHeader(true);
+		httpConfig.setRelativeRedirectAllowed(false);
+		httpConfig.setNotifyForbiddenComplianceViolations(true);
+		httpConfig.setPersistentConnectionsEnabled(true);
+		httpConfig.setSecureScheme("https");
+		httpConfig.setSecurePort(443);
+
+		if (config.trustForwardHeaders()) {
+			final var forwarded = new ForwardedRequestCustomizer();
+			forwarded.setForwardedOnly(config.forwardedOnly());
+			httpConfig.addCustomizer(forwarded);
+		}
+
+		return httpConfig;
+	}
+
+	private static Handler applySizeLimits(final Handler delegate, final JettyServerConfig config) {
+		final var requestLimit = normalizeLimit(config.maxRequestBodyBytes());
+		final var responseLimit = normalizeLimit(config.maxResponseBodyBytes());
+		if (requestLimit < 0 && responseLimit < 0) {
+			return delegate;
+		}
+
+		final var handler = new SizeLimitHandler(requestLimit, responseLimit);
+		handler.setHandler(delegate);
+		return handler;
+	}
+
+	private static Handler applyQoS(final Handler delegate, final JettyServerConfig config) {
+		if (config.maxConcurrentRequests() <= 0) {
+			return delegate;
+		}
+
+		final var handler = new QoSHandler();
+		handler.setMaxRequestCount(config.maxConcurrentRequests());
+		handler.setMaxSuspendedRequestCount(config.maxSuspendedRequests());
+		handler.setMaxSuspend(Duration.ofMillis(Math.max(0L, config.maxSuspendMs())));
+		handler.setHandler(delegate);
+		return handler;
+	}
+
+	private static Handler applyThreadLimit(final Handler delegate, final JettyServerConfig config) {
+		if (config.maxRequestsPerRemoteIp() <= 0) {
+			return delegate;
+		}
+
+		final String forwardedHeader;
+		final boolean rfc7239;
+		if (config.trustForwardHeaders()) {
+			forwardedHeader = config.forwardedOnly() ? "Forwarded" : "X-Forwarded-For";
+			rfc7239 = config.forwardedOnly();
+		} else {
+			forwardedHeader = null;
+			rfc7239 = true;
+		}
+
+		final var handler = new ThreadLimitHandler(forwardedHeader, rfc7239);
+		handler.setThreadLimit(config.maxRequestsPerRemoteIp());
+		handler.setHandler(delegate);
+		return handler;
+	}
+
+	private static Handler applyGracefulShutdown(final Handler delegate, final JettyServerConfig config) {
+		final var handler = new GracefulHandler();
+		handler.setShutdownIdleTimeout(Math.max(0L, config.shutdownIdleTimeoutMs()));
+		handler.setHandler(delegate);
+		return handler;
+	}
+
+	private static long normalizeLimit(final long value) {
+		return value <= 0 ? -1L : value;
 	}
 }
