@@ -28,13 +28,13 @@ package dev.rafex.ether.http.jetty12;
 
 public class JettyTransportException extends Exception {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public JettyTransportException(final String message) {
-		super(message);
-	}
+    public JettyTransportException(final String message) {
+        super(message);
+    }
 
-	public JettyTransportException(final String message, final Throwable cause) {
-		super(message, cause);
-	}
+    public JettyTransportException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 }

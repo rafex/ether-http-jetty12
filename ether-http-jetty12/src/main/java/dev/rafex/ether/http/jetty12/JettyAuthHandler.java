@@ -37,104 +37,104 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
 
-import dev.rafex.ether.json.JsonCodec;
 import dev.rafex.ether.http.core.AuthPolicy;
+import dev.rafex.ether.json.JsonCodec;
 
 public final class JettyAuthHandler extends Handler.Wrapper {
 
-	public static final String REQ_ATTR_AUTH = "auth";
+    public static final String REQ_ATTR_AUTH = "auth";
 
-	record Rule(String method, PathSpec pathSpec) {
-	}
+    record Rule(String method, PathSpec pathSpec) {
+    }
 
-	private final TokenVerifier tokenVerifier;
-	private final JettyApiErrorResponses errorResponses;
-	private final List<Rule> publicRules = new ArrayList<>();
-	private final List<PathSpec> protectedPrefixes = new ArrayList<>();
+    private final TokenVerifier tokenVerifier;
+    private final JettyApiErrorResponses errorResponses;
+    private final List<Rule> publicRules = new ArrayList<>();
+    private final List<PathSpec> protectedPrefixes = new ArrayList<>();
 
-	public JettyAuthHandler(final Handler delegate, final TokenVerifier tokenVerifier, final JsonCodec jsonCodec) {
-		super(delegate);
-		this.tokenVerifier = Objects.requireNonNull(tokenVerifier);
-		this.errorResponses = new JettyApiErrorResponses(Objects.requireNonNull(jsonCodec));
-	}
+    public JettyAuthHandler(final Handler delegate, final TokenVerifier tokenVerifier, final JsonCodec jsonCodec) {
+        super(delegate);
+        this.tokenVerifier = Objects.requireNonNull(tokenVerifier);
+        this.errorResponses = new JettyApiErrorResponses(Objects.requireNonNull(jsonCodec));
+    }
 
-	public JettyAuthHandler publicPath(final String method, final String pathSpec) {
-		publicRules.add(new Rule(method.toUpperCase(), PathSpec.from(pathSpec)));
-		return this;
-	}
+    public JettyAuthHandler publicPath(final String method, final String pathSpec) {
+        publicRules.add(new Rule(method.toUpperCase(), PathSpec.from(pathSpec)));
+        return this;
+    }
 
-	public JettyAuthHandler protectedPrefix(final String pathSpec) {
-		protectedPrefixes.add(PathSpec.from(pathSpec));
-		return this;
-	}
+    public JettyAuthHandler protectedPrefix(final String pathSpec) {
+        protectedPrefixes.add(PathSpec.from(pathSpec));
+        return this;
+    }
 
-	public JettyAuthHandler authPolicy(final AuthPolicy policy) {
-		if (policy == null) {
-			return this;
-		}
-		if (policy.type() == AuthPolicy.Type.PUBLIC_PATH) {
-			return publicPath(policy.method(), policy.pathSpec());
-		}
-		return protectedPrefix(policy.pathSpec());
-	}
+    public JettyAuthHandler authPolicy(final AuthPolicy policy) {
+        if (policy == null) {
+            return this;
+        }
+        if (policy.type() == AuthPolicy.Type.PUBLIC_PATH) {
+            return publicPath(policy.method(), policy.pathSpec());
+        }
+        return protectedPrefix(policy.pathSpec());
+    }
 
-	public JettyAuthHandler authPolicies(final List<AuthPolicy> policies) {
-		if (policies == null) {
-			return this;
-		}
-		for (final var policy : policies) {
-			authPolicy(policy);
-		}
-		return this;
-	}
+    public JettyAuthHandler authPolicies(final List<AuthPolicy> policies) {
+        if (policies == null) {
+            return this;
+        }
+        for (final var policy : policies) {
+            authPolicy(policy);
+        }
+        return this;
+    }
 
-	@Override
-	public boolean handle(final Request request, final Response response, final Callback callback) throws Exception {
-		final var method = request.getMethod().toUpperCase();
-		final var path = request.getHttpURI() != null ? request.getHttpURI().getPath() : null;
-		if (path == null) {
-			errorResponses.badRequest(response, callback, "missing_path");
-			return true;
-		}
+    @Override
+    public boolean handle(final Request request, final Response response, final Callback callback) throws Exception {
+        final var method = request.getMethod().toUpperCase();
+        final var path = request.getHttpURI() != null ? request.getHttpURI().getPath() : null;
+        if (path == null) {
+            errorResponses.badRequest(response, callback, "missing_path");
+            return true;
+        }
 
-		if (isPublic(method, path) || !isProtected(path)) {
-			return super.handle(request, response, callback);
-		}
+        if (isPublic(method, path) || !isProtected(path)) {
+            return super.handle(request, response, callback);
+        }
 
-		final var authz = request.getHeaders().get("authorization");
-		if (authz == null || !authz.startsWith("Bearer ")) {
-			errorResponses.unauthorized(response, callback, "missing_bearer_token");
-			return true;
-		}
+        final var authz = request.getHeaders().get("authorization");
+        if (authz == null || !authz.startsWith("Bearer ")) {
+            errorResponses.unauthorized(response, callback, "missing_bearer_token");
+            return true;
+        }
 
-		final var token = authz.substring("Bearer ".length()).trim();
-		final var verification = tokenVerifier.verify(token, Instant.now().getEpochSecond());
-		if (!verification.ok()) {
-			final var code = verification.code() == null || verification.code().isBlank() ? "invalid_token"
-					: verification.code();
-			errorResponses.unauthorized(response, callback, code);
-			return true;
-		}
+        final var token = authz.substring("Bearer ".length()).trim();
+        final var verification = tokenVerifier.verify(token, Instant.now().getEpochSecond());
+        if (!verification.ok()) {
+            final var code = verification.code() == null || verification.code().isBlank() ? "invalid_token"
+                    : verification.code();
+            errorResponses.unauthorized(response, callback, code);
+            return true;
+        }
 
-		request.setAttribute(REQ_ATTR_AUTH, verification.context());
-		return super.handle(request, response, callback);
-	}
+        request.setAttribute(REQ_ATTR_AUTH, verification.context());
+        return super.handle(request, response, callback);
+    }
 
-	private boolean isPublic(final String method, final String path) {
-		for (final var rule : publicRules) {
-			if (rule.method().equals(method) && rule.pathSpec().matches(path)) {
-				return true;
-			}
-		}
-		return false;
-	}
+    private boolean isPublic(final String method, final String path) {
+        for (final var rule : publicRules) {
+            if (rule.method().equals(method) && rule.pathSpec().matches(path)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	private boolean isProtected(final String path) {
-		for (final var p : protectedPrefixes) {
-			if (p.matches(path)) {
-				return true;
-			}
-		}
-		return false;
-	}
+    private boolean isProtected(final String path) {
+        for (final var p : protectedPrefixes) {
+            if (p.matches(path)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

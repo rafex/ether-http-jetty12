@@ -33,13 +33,22 @@ import org.eclipse.jetty.server.Handler;
 
 public final class JettyRouteRegistry {
 
-	private final List<JettyRouteRegistration> routes = new ArrayList<>();
+    private final List<JettyRouteRegistration> routes = new ArrayList<>();
 
-	public void add(final String pathSpec, final Handler handler) {
-		routes.add(new JettyRouteRegistration(pathSpec, handler));
-	}
+    public void add(final String pathSpec, final Handler handler) {
+        routes.add(new JettyRouteRegistration(pathSpec, handler));
+    }
 
-	public List<JettyRouteRegistration> routes() {
-		return List.copyOf(routes);
-	}
+    public boolean containsPathSpec(final String pathSpec) {
+        for (final var route : routes) {
+            if (route.pathSpec().equals(pathSpec)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public List<JettyRouteRegistration> routes() {
+        return List.copyOf(routes);
+    }
 }

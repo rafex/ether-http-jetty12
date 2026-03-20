@@ -31,5 +31,5 @@ import org.eclipse.jetty.server.Handler;
 @FunctionalInterface
 public interface JettyMiddleware {
 
-	Handler wrap(Handler next);
+    Handler wrap(Handler next);
 }

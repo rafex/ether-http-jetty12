@@ -1,5 +1,7 @@
 package dev.rafex.ether.http.jetty12;
 
+import dev.rafex.ether.http.security.profile.HttpSecurityProfile;
+
 /*-
  * #%L
  * ether-http-jetty12
@@ -27,6 +29,9 @@ package dev.rafex.ether.http.jetty12;
  */
 
 import dev.rafex.ether.json.JsonCodec;
+import dev.rafex.ether.observability.core.request.RequestIdGenerator;
+import dev.rafex.ether.observability.core.timing.TimingRecorder;
 
-public record JettyModuleContext(JettyServerConfig config, JsonCodec jsonCodec, TokenVerifier tokenVerifier) {
+public record JettyModuleContext(JettyServerConfig config, JsonCodec jsonCodec, TokenVerifier tokenVerifier,
+        HttpSecurityProfile securityProfile, RequestIdGenerator requestIdGenerator, TimingRecorder timingRecorder) {
 }

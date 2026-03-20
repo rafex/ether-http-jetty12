@@ -30,25 +30,25 @@ import org.eclipse.jetty.server.Server;
 
 public final class JettyServerRunner {
 
-	private final Server server;
+    private final Server server;
 
-	JettyServerRunner(final Server server) {
-		this.server = server;
-	}
+    JettyServerRunner(final Server server) {
+        this.server = server;
+    }
 
-	public void start() throws Exception {
-		server.start();
-	}
+    public void start() throws Exception {
+        server.start();
+    }
 
-	public void await() throws Exception {
-		server.join();
-	}
+    public void await() throws Exception {
+        server.join();
+    }
 
-	public void stop() throws Exception {
-		server.stop();
-	}
+    public void stop() throws Exception {
+        server.stop();
+    }
 
-	public Server server() {
-		return server;
-	}
+    public Server server() {
+        return server;
+    }
 }

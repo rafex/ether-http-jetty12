@@ -37,50 +37,50 @@ import dev.rafex.ether.json.JsonCodec;
 
 final class JettyResponseUtil {
 
-	private JettyResponseUtil() {
-	}
+    private JettyResponseUtil() {
+    }
 
-	static void json(final Response response, final Callback callback, final JsonCodec codec, final int status,
-			final Object body) {
-		try {
-			jsonOrThrow(response, callback, codec, status, body);
-		} catch (final JettyTransportException e) {
-			throw new JettyTransportRuntimeException("Error writing JSON response", e);
-		}
-	}
+    static void json(final Response response, final Callback callback, final JsonCodec codec, final int status,
+            final Object body) {
+        try {
+            jsonOrThrow(response, callback, codec, status, body);
+        } catch (final JettyTransportException e) {
+            throw new JettyTransportRuntimeException("Error writing JSON response", e);
+        }
+    }
 
-	static void jsonOrThrow(final Response response, final Callback callback, final JsonCodec codec, final int status,
-			final Object body) throws JettyTransportException {
-		response.setStatus(status);
-		response.getHeaders().put("content-type", "application/json; charset=utf-8");
-		final var jsonBody = toJsonBody(codec, body);
-		writeUtf8(response, callback, jsonBody);
-	}
+    static void jsonOrThrow(final Response response, final Callback callback, final JsonCodec codec, final int status,
+            final Object body) throws JettyTransportException {
+        response.setStatus(status);
+        response.getHeaders().put("content-type", "application/json; charset=utf-8");
+        final var jsonBody = toJsonBody(codec, body);
+        writeUtf8(response, callback, jsonBody);
+    }
 
-	static void text(final Response response, final Callback callback, final int status, final String body) {
-		response.setStatus(status);
-		response.getHeaders().put("content-type", "text/plain; charset=utf-8");
-		writeUtf8(response, callback, body == null ? "" : body);
-	}
+    static void text(final Response response, final Callback callback, final int status, final String body) {
+        response.setStatus(status);
+        response.getHeaders().put("content-type", "text/plain; charset=utf-8");
+        writeUtf8(response, callback, body == null ? "" : body);
+    }
 
-	static void noContent(final Response response, final Callback callback, final int status) {
-		response.setStatus(status);
-		callback.succeeded();
-	}
+    static void noContent(final Response response, final Callback callback, final int status) {
+        response.setStatus(status);
+        callback.succeeded();
+    }
 
-	private static void writeUtf8(final Response response, final Callback callback, final String body) {
-		final var bytes = body.getBytes(StandardCharsets.UTF_8);
-		response.write(true, ByteBuffer.wrap(bytes), callback);
-	}
+    private static void writeUtf8(final Response response, final Callback callback, final String body) {
+        final var bytes = body.getBytes(StandardCharsets.UTF_8);
+        response.write(true, ByteBuffer.wrap(bytes), callback);
+    }
 
-	private static String toJsonBody(final JsonCodec codec, final Object body) throws JettyTransportException {
-		if (body instanceof final String s) {
-			return s;
-		}
-		try {
-			return Objects.requireNonNull(codec).toJson(body);
-		} catch (final RuntimeException e) {
-			throw new JettyTransportException("Error serializing JSON payload", e);
-		}
-	}
+    private static String toJsonBody(final JsonCodec codec, final Object body) throws JettyTransportException {
+        if (body instanceof final String s) {
+            return s;
+        }
+        try {
+            return Objects.requireNonNull(codec).toJson(body);
+        } catch (final RuntimeException e) {
+            throw new JettyTransportException("Error serializing JSON payload", e);
+        }
+    }
 }

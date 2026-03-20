@@ -28,12 +28,12 @@ package dev.rafex.ether.http.jetty12;
 
 public interface JettyModule {
 
-	default void registerRoutes(final JettyRouteRegistry routes, final JettyModuleContext context) {
-	}
+    default void registerRoutes(final JettyRouteRegistry routes, final JettyModuleContext context) {
+    }
 
-	default void registerAuthPolicies(final JettyAuthPolicyRegistry authPolicies, final JettyModuleContext context) {
-	}
+    default void registerAuthPolicies(final JettyAuthPolicyRegistry authPolicies, final JettyModuleContext context) {
+    }
 
-	default void registerMiddlewares(final JettyMiddlewareRegistry middlewares, final JettyModuleContext context) {
-	}
+    default void registerMiddlewares(final JettyMiddlewareRegistry middlewares, final JettyModuleContext context) {
+    }
 }

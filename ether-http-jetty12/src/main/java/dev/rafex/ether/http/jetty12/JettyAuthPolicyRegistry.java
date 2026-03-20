@@ -33,21 +33,21 @@ import dev.rafex.ether.http.core.AuthPolicy;
 
 public final class JettyAuthPolicyRegistry {
 
-	private final List<AuthPolicy> policies = new ArrayList<>();
+    private final List<AuthPolicy> policies = new ArrayList<>();
 
-	public void add(final AuthPolicy policy) {
-		policies.add(policy);
-	}
+    public void add(final AuthPolicy policy) {
+        policies.add(policy);
+    }
 
-	public void publicPath(final String method, final String pathSpec) {
-		add(AuthPolicy.publicPath(method, pathSpec));
-	}
+    public void publicPath(final String method, final String pathSpec) {
+        add(AuthPolicy.publicPath(method, pathSpec));
+    }
 
-	public void protectedPrefix(final String pathSpec) {
-		add(AuthPolicy.protectedPrefix(pathSpec));
-	}
+    public void protectedPrefix(final String pathSpec) {
+        add(AuthPolicy.protectedPrefix(pathSpec));
+    }
 
-	public List<AuthPolicy> policies() {
-		return List.copyOf(policies);
-	}
+    public List<AuthPolicy> policies() {
+        return List.copyOf(policies);
+    }
 }

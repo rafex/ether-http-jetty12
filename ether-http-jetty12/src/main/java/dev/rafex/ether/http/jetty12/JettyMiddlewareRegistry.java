@@ -31,13 +31,13 @@ import java.util.List;
 
 public final class JettyMiddlewareRegistry {
 
-	private final List<JettyMiddleware> middlewares = new ArrayList<>();
+    private final List<JettyMiddleware> middlewares = new ArrayList<>();
 
-	public void add(final JettyMiddleware middleware) {
-		middlewares.add(middleware);
-	}
+    public void add(final JettyMiddleware middleware) {
+        middlewares.add(middleware);
+    }
 
-	public List<JettyMiddleware> middlewares() {
-		return List.copyOf(middlewares);
-	}
+    public List<JettyMiddleware> middlewares() {
+        return List.copyOf(middlewares);
+    }
 }

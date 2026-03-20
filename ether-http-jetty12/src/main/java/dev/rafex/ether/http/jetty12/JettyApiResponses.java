@@ -35,38 +35,38 @@ import dev.rafex.ether.json.JsonCodec;
 
 public final class JettyApiResponses {
 
-	private final JsonCodec jsonCodec;
+    private final JsonCodec jsonCodec;
 
-	public JettyApiResponses(final JsonCodec jsonCodec) {
-		this.jsonCodec = Objects.requireNonNull(jsonCodec);
-	}
+    public JettyApiResponses(final JsonCodec jsonCodec) {
+        this.jsonCodec = Objects.requireNonNull(jsonCodec);
+    }
 
-	public void json(final Response response, final Callback callback, final int status, final Object body) {
-		JettyResponseUtil.json(response, callback, jsonCodec, status, body);
-	}
+    public void json(final Response response, final Callback callback, final int status, final Object body) {
+        JettyResponseUtil.json(response, callback, jsonCodec, status, body);
+    }
 
-	public void jsonOrThrow(final Response response, final Callback callback, final int status, final Object body)
-			throws JettyTransportException {
-		JettyResponseUtil.jsonOrThrow(response, callback, jsonCodec, status, body);
-	}
+    public void jsonOrThrow(final Response response, final Callback callback, final int status, final Object body)
+            throws JettyTransportException {
+        JettyResponseUtil.jsonOrThrow(response, callback, jsonCodec, status, body);
+    }
 
-	public void text(final Response response, final Callback callback, final int status, final String body) {
-		JettyResponseUtil.text(response, callback, status, body);
-	}
+    public void text(final Response response, final Callback callback, final int status, final String body) {
+        JettyResponseUtil.text(response, callback, status, body);
+    }
 
-	public void noContent(final Response response, final Callback callback, final int status) {
-		JettyResponseUtil.noContent(response, callback, status);
-	}
+    public void noContent(final Response response, final Callback callback, final int status) {
+        JettyResponseUtil.noContent(response, callback, status);
+    }
 
-	public void ok(final Response response, final Callback callback, final Object body) {
-		json(response, callback, 200, body);
-	}
+    public void ok(final Response response, final Callback callback, final Object body) {
+        json(response, callback, 200, body);
+    }
 
-	public void created(final Response response, final Callback callback, final Object body) {
-		json(response, callback, 201, body);
-	}
+    public void created(final Response response, final Callback callback, final Object body) {
+        json(response, callback, 201, body);
+    }
 
-	public void okNoContent(final Response response, final Callback callback) {
-		noContent(response, callback, 204);
-	}
+    public void okNoContent(final Response response, final Callback callback) {
+        noContent(response, callback, 204);
+    }
 }

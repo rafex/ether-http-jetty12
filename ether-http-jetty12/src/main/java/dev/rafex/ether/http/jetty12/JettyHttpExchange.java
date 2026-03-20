@@ -36,124 +36,124 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
 
-import dev.rafex.ether.json.JsonCodec;
 import dev.rafex.ether.http.core.HttpExchange;
+import dev.rafex.ether.json.JsonCodec;
 
 public final class JettyHttpExchange implements HttpExchange {
 
-	private final Request request;
-	private final Response response;
-	private final Callback callback;
-	private final Map<String, String> pathParams;
-	private final Map<String, List<String>> queryParams;
-	private final Set<String> allowedMethods;
-	private final JettyApiResponses apiResponses;
+    private final Request request;
+    private final Response response;
+    private final Callback callback;
+    private final Map<String, String> pathParams;
+    private final Map<String, List<String>> queryParams;
+    private final Set<String> allowedMethods;
+    private final JettyApiResponses apiResponses;
 
-	public JettyHttpExchange(final Request request, final Response response, final Callback callback,
-			final Map<String, String> pathParams, final Map<String, List<String>> queryParams,
-			final Set<String> allowedMethods, final JsonCodec jsonCodec) {
-		this.request = request;
-		this.response = response;
-		this.callback = callback;
-		this.pathParams = pathParams;
-		this.queryParams = queryParams;
-		this.allowedMethods = normalizeMethods(allowedMethods);
-		this.apiResponses = new JettyApiResponses(jsonCodec);
-	}
+    public JettyHttpExchange(final Request request, final Response response, final Callback callback,
+            final Map<String, String> pathParams, final Map<String, List<String>> queryParams,
+            final Set<String> allowedMethods, final JsonCodec jsonCodec) {
+        this.request = request;
+        this.response = response;
+        this.callback = callback;
+        this.pathParams = pathParams;
+        this.queryParams = queryParams;
+        this.allowedMethods = normalizeMethods(allowedMethods);
+        this.apiResponses = new JettyApiResponses(jsonCodec);
+    }
 
-	public Request request() {
-		return request;
-	}
+    public Request request() {
+        return request;
+    }
 
-	public Response response() {
-		return response;
-	}
+    public Response response() {
+        return response;
+    }
 
-	public Callback callback() {
-		return callback;
-	}
+    public Callback callback() {
+        return callback;
+    }
 
-	@Override
-	public String method() {
-		return request.getMethod();
-	}
+    @Override
+    public String method() {
+        return request.getMethod();
+    }
 
-	@Override
-	public String path() {
-		return request.getHttpURI().getPath();
-	}
+    @Override
+    public String path() {
+        return request.getHttpURI().getPath();
+    }
 
-	@Override
-	public String pathParam(final String name) {
-		return pathParams.get(name);
-	}
+    @Override
+    public String pathParam(final String name) {
+        return pathParams.get(name);
+    }
 
-	@Override
-	public String queryFirst(final String name) {
-		final var values = queryParams.get(name);
-		if (values == null || values.isEmpty()) {
-			return null;
-		}
-		return values.get(0);
-	}
+    @Override
+    public String queryFirst(final String name) {
+        final var values = queryParams.get(name);
+        if (values == null || values.isEmpty()) {
+            return null;
+        }
+        return values.get(0);
+    }
 
-	@Override
-	public List<String> queryAll(final String name) {
-		return queryParams.getOrDefault(name, List.of());
-	}
+    @Override
+    public List<String> queryAll(final String name) {
+        return queryParams.getOrDefault(name, List.of());
+    }
 
-	@Override
-	public Map<String, String> pathParams() {
-		return Collections.unmodifiableMap(pathParams);
-	}
+    @Override
+    public Map<String, String> pathParams() {
+        return Collections.unmodifiableMap(pathParams);
+    }
 
-	@Override
-	public Map<String, List<String>> queryParams() {
-		return Collections.unmodifiableMap(queryParams);
-	}
+    @Override
+    public Map<String, List<String>> queryParams() {
+        return Collections.unmodifiableMap(queryParams);
+    }
 
-	@Override
-	public Set<String> allowedMethods() {
-		return Collections.unmodifiableSet(allowedMethods);
-	}
+    @Override
+    public Set<String> allowedMethods() {
+        return Collections.unmodifiableSet(allowedMethods);
+    }
 
-	@Override
-	public void json(final int status, final Object body) {
-		apiResponses.json(response, callback, status, body);
-	}
+    @Override
+    public void json(final int status, final Object body) {
+        apiResponses.json(response, callback, status, body);
+    }
 
-	@Override
-	public void text(final int status, final String body) {
-		apiResponses.text(response, callback, status, body);
-	}
+    @Override
+    public void text(final int status, final String body) {
+        apiResponses.text(response, callback, status, body);
+    }
 
-	@Override
-	public void noContent(final int status) {
-		apiResponses.noContent(response, callback, status);
-	}
+    @Override
+    public void noContent(final int status) {
+        apiResponses.noContent(response, callback, status);
+    }
 
-	@Override
-	public void methodNotAllowed() {
-		response.getHeaders().put("Allow", String.join(", ", allowedMethods));
-		HttpExchange.super.methodNotAllowed();
-	}
+    @Override
+    public void methodNotAllowed() {
+        response.getHeaders().put("Allow", String.join(", ", allowedMethods));
+        HttpExchange.super.methodNotAllowed();
+    }
 
-	@Override
-	public void options() {
-		response.getHeaders().put("Allow", String.join(", ", allowedMethods));
-		HttpExchange.super.options();
-	}
+    @Override
+    public void options() {
+        response.getHeaders().put("Allow", String.join(", ", allowedMethods));
+        HttpExchange.super.options();
+    }
 
-	private static Set<String> normalizeMethods(final Set<String> methods) {
-		final var out = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
-		if (methods != null) {
-			for (final var method : methods) {
-				if (method != null && !method.isBlank()) {
-					out.add(method.trim().toUpperCase());
-				}
-			}
-		}
-		out.add("OPTIONS");
-		return out;
-	}
+    private static Set<String> normalizeMethods(final Set<String> methods) {
+        final var out = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        if (methods != null) {
+            for (final var method : methods) {
+                if (method != null && !method.isBlank()) {
+                    out.add(method.trim().toUpperCase());
+                }
+            }
+        }
+        out.add("OPTIONS");
+        return out;
+    }
 }

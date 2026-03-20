@@ -28,11 +28,11 @@ package dev.rafex.ether.http.jetty12;
 
 public record TokenVerificationResult(boolean ok, String code, Object context) {
 
-	public static TokenVerificationResult ok(final Object context) {
-		return new TokenVerificationResult(true, null, context);
-	}
+    public static TokenVerificationResult ok(final Object context) {
+        return new TokenVerificationResult(true, null, context);
+    }
 
-	public static TokenVerificationResult failed(final String code) {
-		return new TokenVerificationResult(false, code, null);
-	}
+    public static TokenVerificationResult failed(final String code) {
+        return new TokenVerificationResult(false, code, null);
+    }
 }
