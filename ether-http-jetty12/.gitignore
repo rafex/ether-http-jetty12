@@ -64,3 +64,5 @@ logs/
 *.swp
 *.swo
 *~
+# Maven Wrapper JAR (necesario para el wrapper)
+!.mvn/wrapper/maven-wrapper.jar
