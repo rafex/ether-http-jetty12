@@ -7,6 +7,7 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
 
+import dev.rafex.ether.http.jetty12.response.JettyApiResponses;
 import dev.rafex.ether.http.security.cors.CorsPolicy;
 
 final class JettyCorsHandler extends Handler.Wrapper {

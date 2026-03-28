@@ -46,12 +46,20 @@ import org.eclipse.jetty.server.handler.ThreadLimitHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 import dev.rafex.ether.http.core.AuthPolicy;
+import dev.rafex.ether.http.jetty12.middleware.JettyMiddleware;
+import dev.rafex.ether.http.jetty12.middleware.JettyMiddlewareRegistry;
+import dev.rafex.ether.http.jetty12.response.JettyApiErrorResponses;
+import dev.rafex.ether.http.jetty12.response.JettyApiResponses;
+import dev.rafex.ether.http.jetty12.routing.JettyRouteRegistration;
+import dev.rafex.ether.http.jetty12.routing.JettyRouteRegistry;
+import dev.rafex.ether.http.jetty12.security.JettyAuthPolicyRegistry;
+import dev.rafex.ether.http.jetty12.security.TokenVerifier;
 import dev.rafex.ether.http.security.profile.HttpSecurityProfile;
 import dev.rafex.ether.http.security.proxy.TrustedProxyPolicy;
 import dev.rafex.ether.json.JsonCodec;
 import dev.rafex.ether.observability.core.request.RequestIdGenerator;
-import dev.rafex.ether.observability.core.timing.TimingRecorder;
 import dev.rafex.ether.observability.core.request.UuidRequestIdGenerator;
+import dev.rafex.ether.observability.core.timing.TimingRecorder;
 
 public final class JettyServerFactory {
 

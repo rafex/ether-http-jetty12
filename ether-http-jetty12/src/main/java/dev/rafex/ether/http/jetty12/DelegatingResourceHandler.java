@@ -31,6 +31,7 @@ import java.util.Set;
 
 import dev.rafex.ether.http.core.HttpExchange;
 import dev.rafex.ether.http.core.HttpResource;
+import dev.rafex.ether.http.jetty12.handler.ResourceHandler;
 import dev.rafex.ether.json.JsonCodec;
 
 final class DelegatingResourceHandler extends ResourceHandler {

@@ -26,6 +26,10 @@ package dev.rafex.ether.http.jetty12;
  * #L%
  */
 
+import dev.rafex.ether.http.jetty12.middleware.JettyMiddlewareRegistry;
+import dev.rafex.ether.http.jetty12.routing.JettyRouteRegistry;
+import dev.rafex.ether.http.jetty12.security.JettyAuthPolicyRegistry;
+
 public interface JettyModule {
 
     default void registerRoutes(final JettyRouteRegistry routes, final JettyModuleContext context) {

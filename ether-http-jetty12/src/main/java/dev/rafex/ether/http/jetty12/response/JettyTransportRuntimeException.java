@@ -1,4 +1,4 @@
-package dev.rafex.ether.http.jetty12;
+package dev.rafex.ether.http.jetty12.response;
 
 /*-
  * #%L
@@ -12,10 +12,10 @@ package dev.rafex.ether.http.jetty12;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,13 +26,15 @@ package dev.rafex.ether.http.jetty12;
  * #L%
  */
 
-public record TokenVerificationResult(boolean ok, String code, Object context) {
+public class JettyTransportRuntimeException extends RuntimeException {
 
-    public static TokenVerificationResult ok(final Object context) {
-        return new TokenVerificationResult(true, null, context);
+    private static final long serialVersionUID = 1L;
+
+    public JettyTransportRuntimeException(final String message) {
+        super(message);
     }
 
-    public static TokenVerificationResult failed(final String code) {
-        return new TokenVerificationResult(false, code, null);
+    public JettyTransportRuntimeException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 }

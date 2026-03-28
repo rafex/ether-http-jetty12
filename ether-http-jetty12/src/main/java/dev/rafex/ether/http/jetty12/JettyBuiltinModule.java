@@ -28,6 +28,7 @@ package dev.rafex.ether.http.jetty12;
 
 import dev.rafex.ether.http.core.builtin.HealthResource;
 import dev.rafex.ether.http.core.builtin.HelloResource;
+import dev.rafex.ether.http.jetty12.routing.JettyRouteRegistry;
 
 final class JettyBuiltinModule {
 

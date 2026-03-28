@@ -1,4 +1,4 @@
-package dev.rafex.ether.http.jetty12;
+package dev.rafex.ether.http.jetty12.security;
 
 /*-
  * #%L
@@ -12,10 +12,10 @@ package dev.rafex.ether.http.jetty12;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,8 +26,28 @@ package dev.rafex.ether.http.jetty12;
  * #L%
  */
 
-@FunctionalInterface
-public interface TokenVerifier {
+import java.util.ArrayList;
+import java.util.List;
 
-    TokenVerificationResult verify(String token, long epochSeconds);
+import dev.rafex.ether.http.core.AuthPolicy;
+
+public final class JettyAuthPolicyRegistry {
+
+    private final List<AuthPolicy> policies = new ArrayList<>();
+
+    public void add(final AuthPolicy policy) {
+        policies.add(policy);
+    }
+
+    public void publicPath(final String method, final String pathSpec) {
+        add(AuthPolicy.publicPath(method, pathSpec));
+    }
+
+    public void protectedPrefix(final String pathSpec) {
+        add(AuthPolicy.protectedPrefix(pathSpec));
+    }
+
+    public List<AuthPolicy> policies() {
+        return List.copyOf(policies);
+    }
 }

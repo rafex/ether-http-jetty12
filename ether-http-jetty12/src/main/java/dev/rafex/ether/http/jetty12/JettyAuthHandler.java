@@ -38,6 +38,9 @@ import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
 
 import dev.rafex.ether.http.core.AuthPolicy;
+import dev.rafex.ether.http.jetty12.response.JettyApiErrorResponses;
+import dev.rafex.ether.http.jetty12.security.TokenVerificationResult;
+import dev.rafex.ether.http.jetty12.security.TokenVerifier;
 import dev.rafex.ether.json.JsonCodec;
 
 public final class JettyAuthHandler extends Handler.Wrapper {

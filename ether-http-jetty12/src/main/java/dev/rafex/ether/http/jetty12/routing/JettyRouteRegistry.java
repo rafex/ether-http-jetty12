@@ -1,4 +1,4 @@
-package dev.rafex.ether.http.jetty12;
+package dev.rafex.ether.http.jetty12.routing;
 
 /*-
  * #%L
@@ -26,15 +26,29 @@ package dev.rafex.ether.http.jetty12;
  * #L%
  */
 
-public class JettyTransportRuntimeException extends RuntimeException {
+import java.util.ArrayList;
+import java.util.List;
 
-    private static final long serialVersionUID = 1L;
+import org.eclipse.jetty.server.Handler;
 
-    public JettyTransportRuntimeException(final String message) {
-        super(message);
+public final class JettyRouteRegistry {
+
+    private final List<JettyRouteRegistration> routes = new ArrayList<>();
+
+    public void add(final String pathSpec, final Handler handler) {
+        routes.add(new JettyRouteRegistration(pathSpec, handler));
     }
 
-    public JettyTransportRuntimeException(final String message, final Throwable cause) {
-        super(message, cause);
+    public boolean containsPathSpec(final String pathSpec) {
+        for (final var route : routes) {
+            if (route.pathSpec().equals(pathSpec)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public List<JettyRouteRegistration> routes() {
+        return List.copyOf(routes);
     }
 }

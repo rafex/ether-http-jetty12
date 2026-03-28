@@ -1,4 +1,4 @@
-package dev.rafex.ether.http.jetty12;
+package dev.rafex.ether.http.jetty12.middleware;
 
 /*-
  * #%L
@@ -12,10 +12,10 @@ package dev.rafex.ether.http.jetty12;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,29 +26,10 @@ package dev.rafex.ether.http.jetty12;
  * #L%
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jetty.server.Handler;
 
-public final class JettyRouteRegistry {
+@FunctionalInterface
+public interface JettyMiddleware {
 
-    private final List<JettyRouteRegistration> routes = new ArrayList<>();
-
-    public void add(final String pathSpec, final Handler handler) {
-        routes.add(new JettyRouteRegistration(pathSpec, handler));
-    }
-
-    public boolean containsPathSpec(final String pathSpec) {
-        for (final var route : routes) {
-            if (route.pathSpec().equals(pathSpec)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public List<JettyRouteRegistration> routes() {
-        return List.copyOf(routes);
-    }
+    Handler wrap(Handler next);
 }

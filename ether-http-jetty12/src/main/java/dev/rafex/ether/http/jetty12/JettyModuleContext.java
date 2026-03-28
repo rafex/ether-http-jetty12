@@ -1,5 +1,6 @@
 package dev.rafex.ether.http.jetty12;
 
+import dev.rafex.ether.http.jetty12.security.TokenVerifier;
 import dev.rafex.ether.http.security.profile.HttpSecurityProfile;
 
 /*-

@@ -1,4 +1,4 @@
-package dev.rafex.ether.http.jetty12;
+package dev.rafex.ether.http.jetty12.routing;
 
 /*-
  * #%L
@@ -26,15 +26,7 @@ package dev.rafex.ether.http.jetty12;
  * #L%
  */
 
-public class JettyTransportException extends Exception {
+import org.eclipse.jetty.server.Handler;
 
-    private static final long serialVersionUID = 1L;
-
-    public JettyTransportException(final String message) {
-        super(message);
-    }
-
-    public JettyTransportException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+public record JettyRouteRegistration(String pathSpec, Handler handler) {
 }

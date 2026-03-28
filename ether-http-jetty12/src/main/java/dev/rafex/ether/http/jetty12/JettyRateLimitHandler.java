@@ -8,8 +8,9 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
 
-import dev.rafex.ether.http.security.ratelimit.RateLimitPolicy;
+import dev.rafex.ether.http.jetty12.response.JettyApiErrorResponses;
 import dev.rafex.ether.http.security.proxy.TrustedProxyPolicy;
+import dev.rafex.ether.http.security.ratelimit.RateLimitPolicy;
 
 final class JettyRateLimitHandler extends Handler.Wrapper {
 
