@@ -62,6 +62,7 @@ import dev.rafex.ether.http.security.proxy.TrustedProxyPolicy;
 import dev.rafex.ether.json.JsonCodecBuilder;
 import dev.rafex.ether.observability.core.timing.TimingSample;
 import dev.rafex.ether.observability.core.request.UuidRequestIdGenerator;
+import dev.rafex.ether.http.jetty12.routing.JettyRouteRegistry;
 
 class JettyServerFactoryTest {
 
